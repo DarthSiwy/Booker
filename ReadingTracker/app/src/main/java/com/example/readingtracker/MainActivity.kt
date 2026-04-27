@@ -19,6 +19,12 @@ class MainActivity : AppCompatActivity() {
         val btnAddProgress = findViewById<Button>(R.id.btnAddProgress)
         val btnBooksList = findViewById<Button>(R.id.btnBooksList)
 
+        val btnStats = findViewById<Button>(R.id.btnStats)
+
+        btnStats.setOnClickListener {
+            startActivity(Intent(this, StatsActivity::class.java))
+        }
+
         btnAddBook.setOnClickListener {
             startActivity(Intent(this, AddBookActivity::class.java))
         }

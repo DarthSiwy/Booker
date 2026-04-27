@@ -3,6 +3,8 @@ package com.example.readingtracker
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class AddProgressActivity : AppCompatActivity() {
 
@@ -83,6 +85,20 @@ class AddProgressActivity : AppCompatActivity() {
             book.currentPage = newCurrentPage
 
             Storage.saveBooks(this, books)
+
+
+            val sessions = Storage.loadSessions(this)
+            val today = java.text.SimpleDateFormat("yyyy-MM-dd")
+                .format(java.util.Date())
+            sessions.add(
+                ReadingSession(
+                    book.title,
+                    today,
+                    newCurrentPage
+                )
+            )
+
+            Storage.saveSessions(this, sessions)
 
             Toast.makeText(this, "Progress updated!", Toast.LENGTH_SHORT).show()
             finish()
