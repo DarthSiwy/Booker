@@ -7,7 +7,7 @@ import com.google.gson.reflect.TypeToken
 object Storage {
 
     //private const val PREF_NAME = "books_pref_v1"
-    const val PREF_NAME = "books_pref_v7"
+    const val PREF_NAME = "books_pref_v10"
 
     private const val KEY_BOOKS = "books"
     private const val KEY_SESSIONS = "sessions"
@@ -32,6 +32,14 @@ object Storage {
         }
     }
 
+    fun loadBooksFromAssets(context: Context): List<Book> {
+        val json = context.assets.open("books.json")
+            .bufferedReader()
+            .use { it.readText() }
+
+        return Gson().fromJson(json, Array<Book>::class.java).toList()
+    }
+
     fun saveSessions(context: Context, sessions: List<ReadingSession>) {
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         val json = Gson().toJson(sessions)
@@ -48,6 +56,14 @@ object Storage {
         } else {
             mutableListOf()
         }
+    }
+
+    fun loadSessionsFromAssets(context: Context): List<ReadingSession> {
+        val json = context.assets.open("sessions.json")
+            .bufferedReader()
+            .use { it.readText() }
+
+        return Gson().fromJson(json, Array<ReadingSession>::class.java).toList()
     }
 
 }

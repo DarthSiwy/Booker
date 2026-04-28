@@ -13,8 +13,8 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        seedBooksIfNeeded()
-        seedSessionsIfNeeded()
+        seedBooksFromAssetsIfNeeded()
+        seedSessionsFromAssetsIfNeeded()
 
         val btnAddBook = findViewById<Button>(R.id.btnAddBook)
         val btnAddProgress = findViewById<Button>(R.id.btnAddProgress)
@@ -40,47 +40,24 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun seedBooksIfNeeded() {
+    private fun seedBooksFromAssetsIfNeeded() {
         val prefs = getSharedPreferences(Storage.PREF_NAME, Context.MODE_PRIVATE)
-        //val prefs = getSharedPreferences("books_pref", Context.MODE_PRIVATE)
-
         val isSeeded = prefs.getBoolean("seeded", false)
 
         if (!isSeeded) {
-            val books = listOf(
-                Book("The Hobbit", "J.R.R. Tolkien", 1937, 310, 120),
-                Book("1984", "George Orwell", 1949, 328, 200),
-                Book("Harry Potter and the Philosopher's Stone", "J.K. Rowling", 1997, 223, 223),
-                Book("Clean Code", "Robert C. Martin", 2008, 464, 150),
-                Book("Atomic Habits", "James Clear", 2018, 320, 80),
-                Book("Dune1", "Frank Herbert", 1965, 896, 80)
-            )
-
+            val books = Storage.loadBooksFromAssets(this)
             Storage.saveBooks(this, books)
 
             prefs.edit().putBoolean("seeded", true).apply()
         }
-
     }
 
-    private fun seedSessionsIfNeeded() {
+    private fun seedSessionsFromAssetsIfNeeded() {
         val prefs = getSharedPreferences(Storage.PREF_NAME, Context.MODE_PRIVATE)
         val isSeeded = prefs.getBoolean("sessions_seeded", false)
 
         if (!isSeeded) {
-            val sessions = listOf(
-                ReadingSession("The Hobbit", "2026-04-20", 50),
-                ReadingSession("The Hobbit", "2026-04-21", 80),
-                ReadingSession("The Hobbit", "2026-04-23", 120),
-
-                ReadingSession("1984", "2026-04-20", 30),
-                ReadingSession("1984", "2026-04-21", 70),
-
-                ReadingSession("Clean Code", "2026-04-18", 40),
-                ReadingSession("Clean Code", "2026-04-19", 90),
-                ReadingSession("Clean Code", "2026-04-20", 150)
-            )
-
+            val sessions = Storage.loadSessionsFromAssets(this)
             Storage.saveSessions(this, sessions)
 
             prefs.edit().putBoolean("sessions_seeded", true).apply()

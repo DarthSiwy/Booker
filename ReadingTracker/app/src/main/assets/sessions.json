@@ -1,0 +1,12 @@
+[
+  {"bookTitle": "The Hobbit", "date": "2026-04-20", "page": 50},
+  {"bookTitle": "The Hobbit", "date": "2026-04-21", "page": 80},
+  {"bookTitle": "The Hobbit", "date": "2026-04-22", "page": 120},
+
+  {"bookTitle": "1984", "date": "2026-04-20", "page": 30},
+  {"bookTitle": "1984", "date": "2026-04-21", "page": 70},
+
+  {"bookTitle": "Clean Code", "date": "2026-04-18", "page": 40},
+  {"bookTitle": "Clean Code", "date": "2026-04-19", "page": 90},
+  {"bookTitle": "Clean Code", "date": "2026-04-20", "page": 150}
+]

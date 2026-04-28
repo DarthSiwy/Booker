@@ -1,0 +1,23 @@
+[
+  {
+    "title": "The Hobbit",
+    "author": "J.R.R. Tolkien",
+    "year": 1937,
+    "totalPages": 310,
+    "currentPage": 120
+  },
+  {
+    "title": "1984",
+    "author": "George Orwell",
+    "year": 1949,
+    "totalPages": 328,
+    "currentPage": 200
+  },
+  {
+    "title": "Clean Code",
+    "author": "Robert C. Martin",
+    "year": 2008,
+    "totalPages": 464,
+    "currentPage": 150
+  }
+]
