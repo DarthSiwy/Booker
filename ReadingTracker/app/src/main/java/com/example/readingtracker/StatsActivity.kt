@@ -1,13 +1,21 @@
 package com.example.readingtracker
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import android.content.Intent
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import java.time.LocalDate
 
 class StatsActivity : AppCompatActivity() {
 
     private lateinit var books: MutableList<Book>
+    private lateinit var lineChart: LineChart
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -15,20 +23,14 @@ class StatsActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        // 📊 VIEW REFERENCES
         val spinner = findViewById<Spinner>(R.id.spinnerBooks)
         val tvStats = findViewById<TextView>(R.id.tvStats)
-
         val btnHistory = findViewById<Button>(R.id.btnHistory)
 
-        btnHistory.setOnClickListener {
-            val selectedIndex = spinner.selectedItemPosition
-            val book = books[selectedIndex]
+        lineChart = findViewById(R.id.lineChart)
 
-            val intent = Intent(this, HistoryActivity::class.java)
-            intent.putExtra("bookTitle", book.title)
-            startActivity(intent)
-        }
-
+        // 📚 LOAD DATA
         books = Storage.loadBooks(this)
 
         if (books.isEmpty()) {
@@ -36,6 +38,7 @@ class StatsActivity : AppCompatActivity() {
             return
         }
 
+        // 📌 SPINNER SETUP
         val titles = books.map { it.title }
 
         val adapter = ArrayAdapter(
@@ -44,24 +47,33 @@ class StatsActivity : AppCompatActivity() {
             titles
         )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
         spinner.adapter = adapter
 
+        // 📜 HISTORY BUTTON
+        btnHistory.setOnClickListener {
+            val book = books[spinner.selectedItemPosition]
+
+            val intent = Intent(this, HistoryActivity::class.java)
+            intent.putExtra("bookTitle", book.title)
+            startActivity(intent)
+        }
+
+        // 📊 UPDATE STATS
         fun updateStats(index: Int) {
             val book = books[index]
-
 
             val sessions = Storage.loadSessions(this)
                 .filter { it.bookTitle == book.title }
                 .sortedBy { it.date }
 
+            // 📈 REAL PROGRESS CALCULATION
             var totalRead = 0
             var previousPage = 0
 
             for (s in sessions) {
                 val diff = s.page - previousPage
-                if (diff > 0) {
-                    totalRead += diff
-                }
+                if (diff > 0) totalRead += diff
                 previousPage = s.page
             }
 
@@ -77,15 +89,14 @@ class StatsActivity : AppCompatActivity() {
 
             val pagesLeft = book.totalPages - book.currentPage
 
-
-            // 🔥 streak (prosty)
+            // 🔥 STREAK
             val sortedDates = sessions.map { it.date }.distinct().sorted()
 
             var streak = 0
-            var lastDate: java.time.LocalDate? = null
+            var lastDate: LocalDate? = null
 
             for (dateStr in sortedDates) {
-                val date = java.time.LocalDate.parse(dateStr)
+                val date = LocalDate.parse(dateStr)
 
                 if (lastDate == null || date.minusDays(1) == lastDate) {
                     streak++
@@ -96,32 +107,73 @@ class StatsActivity : AppCompatActivity() {
                 lastDate = date
             }
 
+            // 📄 TEXT OUTPUT
             tvStats.text = """
-        📖 Title: ${book.title}
-        
-        📊 Progress: $progressPercent%
-        
-        📄 Current page: ${book.currentPage} / ${book.totalPages}
-        
-        📉 Pages left: $pagesLeft
-        
-        📅 Days read: $daysRead
-        
-        📈 Avg pages/day: $avgPerDay
-        
-        🔥 Reading streak: $streak days
-    """.trimIndent()
+                📖 Title: ${book.title}
+                
+                📊 Progress: $progressPercent%
+                
+                📄 Current page: ${book.currentPage} / ${book.totalPages}
+                
+                📉 Pages left: $pagesLeft
+                
+                📅 Days read: $daysRead
+                
+                📈 Avg pages/day: $avgPerDay
+                
+                🔥 Reading streak: $streak days
+            """.trimIndent()
+
+            // 📊 CHART
+            updateChart(book)
         }
+
+        // 📊 INITIAL LOAD
         updateStats(0)
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: android.view.View?,
+                position: Int,
+                id: Long
+            ) {
                 updateStats(position)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
+
+    // 📊 CHART FUNCTION
+    private fun updateChart(book: Book) {
+
+        val sessions = Storage.loadSessions(this)
+            .filter { it.bookTitle == book.title }
+            .sortedBy { it.date }
+
+        val entries = mutableListOf<Entry>()
+        val labels = mutableListOf<String>()
+
+        sessions.forEachIndexed { index, session ->
+            entries.add(Entry(index.toFloat(), session.page.toFloat()))
+            labels.add(session.date)
+        }
+
+        val dataSet = LineDataSet(entries, "Reading Progress")
+        val lineData = LineData(dataSet)
+
+        lineChart.data = lineData
+
+        lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+        lineChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+        lineChart.xAxis.granularity = 1f
+
+        lineChart.description.text = "Pages over time"
+
+        lineChart.invalidate()
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
