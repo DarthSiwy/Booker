@@ -11,6 +11,7 @@ class BooksListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_books_list)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Books List"
 
         val tvBooks = findViewById<TextView>(R.id.tvBooks)
 

@@ -17,6 +17,7 @@ class AddBookActivity : AppCompatActivity() {
         val btnSave = findViewById<Button>(R.id.btnSave)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Add Book"
 
 
         btnSave.setOnClickListener {

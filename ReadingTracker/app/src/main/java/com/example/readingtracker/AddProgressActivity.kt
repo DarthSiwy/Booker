@@ -15,6 +15,7 @@ class AddProgressActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_progress)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Add Progress"
 
         val spinner = findViewById<Spinner>(R.id.spinnerBooks)
         val etCurrentPage = findViewById<EditText>(R.id.etCurrentPage)

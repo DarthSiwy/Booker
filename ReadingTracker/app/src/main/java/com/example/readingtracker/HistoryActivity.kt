@@ -11,6 +11,7 @@ class HistoryActivity : AppCompatActivity() {
         setContentView(R.layout.activity_history)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "History"
 
         val tvHistory = findViewById<TextView>(R.id.tvHistory)
 

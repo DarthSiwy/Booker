@@ -22,6 +22,7 @@ class StatsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_stats)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Statistics"
 
         // 📊 VIEW REFERENCES
         val spinner = findViewById<Spinner>(R.id.spinnerBooks)
